@@ -33,6 +33,7 @@ fn main() {
     let (mut vertices2, mut indices2, mut uvs2) = rect_fan(120.0, 8.0, 100.0, 30.0);
 
     let mut geo = Geometry::new();
+
     let mut vertices = Vec::new();
     vertices.append(&mut vertices1);
     vertices.append(&mut vertices2);
@@ -49,6 +50,42 @@ fn main() {
     uvs.append(&mut uvs1);
     uvs.append(&mut uvs2);
     geo.add_uv(&uvs);
+
+    #[rustfmt::skip]
+    let colors: Vec<f32> = vec![
+        // 1.0, 0.0, 0.0, 1.0, // 红色
+        // 0.0, 1.0, 0.0, 1.0, // 绿色
+        // 0.0, 0.0, 1.0, 1.0, // 蓝色
+        // 1.0, 1.0, 1.0, 1.0, // 蓝色
+        
+        // 1.0, 0.0, 0.0, 1.0, // 红色
+        // 0.0, 1.0, 0.0, 1.0, // 绿色
+        // 0.0, 0.0, 1.0, 1.0, // 蓝色
+        // 1.0, 1.0, 1.0, 1.0, // 蓝色
+        1.0, 0.0, 0.0, 1.0,
+        1.0, 0.0, 0.0, 1.0,
+        0.0, 1.0, 0.0, 1.0,
+        0.0, 1.0, 0.0, 1.0,
+        
+        0.0, 0.0, 1.0, 1.0,
+        0.0, 0.0, 1.0, 1.0,
+
+        1.0, 0.0, 1.0, 1.0,
+        // 0.0, 0.0, 0.0, 1.0,
+        // 0.0, 0.0, 0.0, 1.0,
+        // 0.0, 1.0, 0.0, 1.0,
+        // 1.0, 1.0, 1.0, 1.0,
+
+        0.0, 1.0, 0.0, 1.0,
+        0.0, 1.0, 0.0, 1.0,
+        0.0, 1.0, 0.0, 1.0,
+
+        0.0, 1.0, 0.0, 1.0,
+        // 0.0, 1.0, 0.0, 1.0,
+        // 0.0, 1.0, 0.0, 1.0,
+    ];
+
+    geo.add_border_color(&colors);
 
     'running: loop {
         for event in winsdl.event_pump.poll_iter() {

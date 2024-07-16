@@ -124,18 +124,13 @@ impl<'a> Program<'a> {
             let attributes = [
                 "viewport",
 
-                "left", "top", "right", "bottom",
-
-                "color", "font-size", "font-style", "font-weight",
-
-                "border-top-width", "border-top-color", "border-top-style",
-                "border-right-width", "border-right-color", "border-right-style",
-                "border-bottom-width", "border-bottom-color", "border-bottom-style",
-                "border-left-width", "border-left-color", "border-left-style",
+                // "left", "top", "right", "bottom",
     
-                "padding-top", "padding-right", "padding-bottom", "padding-left",
+                // "padding-top", "padding-right", "padding-bottom", "padding-left",
     
-                "margin-top", "margin-right", "margin-bottom", "margin-left",
+                // "margin-top", "margin-right", "margin-bottom", "margin-left",
+                // "border_top_color","border_right_color","border_bottom_color","border_left_color",
+                // "border_color"
             ];
             attributes.iter().for_each(|str| {
                 let n = CString::new(*str).unwrap();
@@ -144,7 +139,14 @@ impl<'a> Program<'a> {
             });
 
             #[rustfmt::skip]
-            let uniforms = [];
+            let uniforms = [
+                "color", "font-size", "font-style", "font-weight",
+
+                // "border_top-width",  "border_top-style",
+                // "border_right-width",  "border_right-style",
+                // "border_bottom-width",  "border_bottom-style",
+                // "border_left-width",  "border_left-style",
+            ];
 
             uniforms.iter().for_each(|str| {
                 let n = CString::new(*str).unwrap();

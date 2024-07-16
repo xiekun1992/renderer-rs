@@ -10,6 +10,8 @@ pub struct Geometry {
     pub uv_id: GLuint,
     pub uv_attr_id: GLuint,
     pub index_id: GLuint,
+
+    pub border_color_id: GLuint,
 }
 
 impl Drop for Geometry {
@@ -39,6 +41,7 @@ impl Geometry {
             uv_id: id,
             uv_attr_id: id,
             index_id: id,
+            border_color_id: id,
         }
     }
 
@@ -75,7 +78,7 @@ impl Geometry {
                 gl::ARRAY_BUFFER,
                 (uvs.len() * std::mem::size_of::<f32>()) as gl::types::GLsizeiptr,
                 uvs.as_ptr() as *const gl::types::GLvoid,
-                gl::DYNAMIC_DRAW,
+                gl::STATIC_DRAW,
             );
 
             // gl::GenVertexArrays(1, &mut self.uv_attr_id);
@@ -92,6 +95,31 @@ impl Geometry {
         }
     }
 
+    pub fn add_border_color(&mut self, border_color: &Vec<f32>) {
+        unsafe {
+            gl::GenBuffers(1, &mut self.border_color_id);
+            gl::BindBuffer(gl::ARRAY_BUFFER, self.border_color_id);
+            gl::BufferData(
+                gl::ARRAY_BUFFER,
+                (border_color.len() * std::mem::size_of::<f32>()) as gl::types::GLsizeiptr,
+                border_color.as_ptr() as *const gl::types::GLvoid,
+                gl::STATIC_DRAW,
+            );
+
+            // gl::GenVertexArrays(1, &mut self.uv_attr_id);
+            // gl::BindVertexArray(self.uv_attr_id);
+            gl::EnableVertexAttribArray(2);
+            gl::VertexAttribPointer(
+                2,
+                4,
+                gl::FLOAT,
+                gl::FALSE,
+                (4 * std::mem::size_of::<f32>()) as GLint,
+                null(),
+            );
+        }
+    }
+
     pub fn add_index(&mut self, indices: &Vec<u32>) {
         unsafe {
             gl::GenBuffers(1, &mut self.index_id);
@@ -100,7 +128,7 @@ impl Geometry {
                 gl::ELEMENT_ARRAY_BUFFER,
                 (indices.len() * std::mem::size_of::<u32>()) as gl::types::GLsizeiptr,
                 indices.as_ptr() as *const gl::types::GLvoid,
-                gl::DYNAMIC_DRAW,
+                gl::STATIC_DRAW,
             );
         }
     }
