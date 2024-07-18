@@ -1,6 +1,6 @@
 pub mod objects;
 
-use std::ptr::null;
+use std::{ffi::c_void, ptr::null};
 
 use gl::types::{GLint, GLuint};
 
@@ -12,6 +12,8 @@ pub struct Geometry {
     pub index_id: GLuint,
 
     pub border_color_id: GLuint,
+    pub texture_id: GLuint,
+    pub vertex_idx_id: GLuint,
 }
 
 impl Drop for Geometry {
@@ -42,6 +44,8 @@ impl Geometry {
             uv_attr_id: id,
             index_id: id,
             border_color_id: id,
+            texture_id: id,
+            vertex_idx_id: id,
         }
     }
 
@@ -94,15 +98,14 @@ impl Geometry {
             );
         }
     }
-
-    pub fn add_border_color(&mut self, border_color: &Vec<f32>) {
+    pub fn add_vertex_idx(&mut self, vertex_idx: &Vec<f32>) {
         unsafe {
-            gl::GenBuffers(1, &mut self.border_color_id);
-            gl::BindBuffer(gl::ARRAY_BUFFER, self.border_color_id);
+            gl::GenBuffers(1, &mut self.vertex_idx_id);
+            gl::BindBuffer(gl::ARRAY_BUFFER, self.vertex_idx_id);
             gl::BufferData(
                 gl::ARRAY_BUFFER,
-                (border_color.len() * std::mem::size_of::<f32>()) as gl::types::GLsizeiptr,
-                border_color.as_ptr() as *const gl::types::GLvoid,
+                (vertex_idx.len() * std::mem::size_of::<f32>()) as gl::types::GLsizeiptr,
+                vertex_idx.as_ptr() as *const gl::types::GLvoid,
                 gl::STATIC_DRAW,
             );
 
@@ -111,13 +114,36 @@ impl Geometry {
             gl::EnableVertexAttribArray(2);
             gl::VertexAttribPointer(
                 2,
-                4,
+                1,
                 gl::FLOAT,
                 gl::FALSE,
-                (4 * std::mem::size_of::<f32>()) as GLint,
+                (1 * std::mem::size_of::<f32>()) as GLint,
                 null(),
             );
         }
+    }
+
+    pub fn add_texture(&mut self, tex: &Vec<f32>, width: i32, height: i32) {
+        unsafe {
+            gl::GenTextures(1, &mut self.texture_id);
+            gl::BindTexture(gl::TEXTURE_2D, self.texture_id);
+            gl::TexImage2D(
+                gl::TEXTURE_2D,
+                0,
+                gl::RGBA32F as i32,
+                width as i32,
+                height as i32,
+                0,
+                gl::RGBA,
+                gl::FLOAT,
+                tex.as_ptr() as *const c_void,
+            );
+            gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_WRAP_S, gl::REPEAT as i32);
+            gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_WRAP_T, gl::REPEAT as i32);
+            gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MIN_FILTER, gl::NEAREST as i32);
+            gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MAG_FILTER, gl::NEAREST as i32);
+            gl::GenerateMipmap(gl::TEXTURE_2D);
+        };
     }
 
     pub fn add_index(&mut self, indices: &Vec<u32>) {

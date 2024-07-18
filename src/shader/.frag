@@ -1,16 +1,19 @@
 #version 330 core
 
 out vec4 Color;
-in vec2 vUv;
-flat 
-in vec4 vertexColor;
 
-float border_left = 0.1;
-float border_top = 0.25;
-float border_right = 0.1;
-float border_bottom = 0.25;
+in vec2 vUv;
+flat in float indices;
+
+uniform sampler2D ourTexture;
 
 void main() {
+    float texture_y = 1.0 / (indices + 1.0);
+    vec4 border_width = texture(ourTexture, vec2(0.9, texture_y));
+    float border_top = border_width.x;
+    float border_right = border_width.y;
+    float border_bottom = border_width.z;
+    float border_left = border_width.w;
 
     if (vUv.x <= border_left
         && (
@@ -19,8 +22,7 @@ void main() {
             (vUv.y - (1.0 - border_top)) / (border_left - vUv.x) <= border_top / border_left
         )
     ) {
-        Color = vec4(vec3(1.0, 0.0, 0.0), 1.0);
-        Color = vertexColor;
+        Color = texture(ourTexture, vec2(0.8, texture_y));
     } else if (
         vUv.x >= 1.0 - border_right
         && (
@@ -29,19 +31,18 @@ void main() {
             (vUv.y) / (border_right-(vUv.x - (1.0 - border_right))) >= border_bottom / border_right
         )
     ) {
-        Color = vec4(vec3(1.0, 1.0, 0.0), 1.0);
-        Color = vertexColor;
+        Color = texture(ourTexture, vec2(0.4, texture_y));
     } else if (
         vUv.y <= border_bottom
     ) {
-        Color = vec4(vec3(0.0, 1.0, 0.0), 1.0);
-        Color = vertexColor;
+        Color = texture(ourTexture, vec2(0.6, texture_y));
     } else if (vUv.y >= 1.0 - border_top) {
-        Color = vec4(vec3(0.0, 0.0, 1.0), 1.0);
-        Color = vertexColor;
+        Color = texture(ourTexture, vec2(0.2, texture_y));
     } else {
-        Color = vec4(vec3(0.0, 0.0, 0.0), 1.0);
+        // Color = vec4(vec3(0.0, 0.0, 0.0), 1.0);
+        discard;
     }
-        // Color = vertexColor;
-    // Color = vec4(1.0, 0.902, 0.0, 1.0);
+    // Color = vec4(vec3(indices, indices, indices), 1.0);
+    //  Color = texture(ourTexture, vUv);
+    //  Color = texture(ourTexture, vec2(0.9, 0.0));
 }
