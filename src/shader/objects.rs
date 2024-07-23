@@ -119,6 +119,9 @@ impl<'a> Program<'a> {
     pub fn set(&mut self) {
         unsafe {
             UseProgram(self.id);
+            // 启用混合模式
+            gl::Enable(gl::BLEND);
+            gl::BlendFunc(gl::SRC_ALPHA, gl::ONE_MINUS_SRC_ALPHA);
 
             #[rustfmt::skip]
             let attributes = [
